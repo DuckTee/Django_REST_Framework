@@ -5,14 +5,16 @@ from django.db import models
 class User(AbstractUser):
     username = None
 
-    email = models.EmailField(unique=True, verbose_name="Почта", help_text="Укажите почту")
+    email = models.EmailField(
+        unique=True, verbose_name="Почта", help_text="Укажите почту"
+    )
 
     phone = models.CharField(
         max_length=15,
         blank=True,
         null=True,
         verbose_name="Телефон",
-        help_text="Введите номер телефона"
+        help_text="Введите номер телефона",
     )
 
     city = models.CharField(
@@ -20,18 +22,18 @@ class User(AbstractUser):
         blank=True,
         null=True,
         verbose_name="Город",
-        help_text = "Укажите город",
+        help_text="Укажите город",
     )
 
     avatar = models.ImageField(
-        upload_to='users/avatars',
+        upload_to="users/avatars",
         null=True,
         blank=True,
         verbose_name="Аватар",
         help_text="Загрузите аватар",
     )
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     class Meta:
