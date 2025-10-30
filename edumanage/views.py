@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from users.permissions import IsOwner, IsModerator
 from .models import Course, Lesson, Subscription
+from .paginators import StandardResultsSetPagination
 from .serializers import CourseSerializer, LessonSerializer
 
 
@@ -13,6 +14,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
+    pagination_class = StandardResultsSetPagination
 
     def get_permissions(self):
         """
@@ -48,7 +50,9 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 class LessonListCreateView(generics.ListCreateAPIView):
     """Generic-класс для списка и создания уроков"""
+
     serializer_class = LessonSerializer
+    pagination_class = StandardResultsSetPagination
 
     def get_permissions(self):
         if self.request.method == 'GET':
