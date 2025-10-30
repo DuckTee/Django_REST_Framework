@@ -3,7 +3,6 @@ from django.db import models
 
 class Course(models.Model):
     """Модель курса"""
-
     title = models.CharField(
         max_length=255,
         verbose_name="Название курса",
@@ -19,6 +18,13 @@ class Course(models.Model):
     description = models.TextField(
         blank=True, null=True, verbose_name="Описание", help_text="Добавьте описание"
     )
+    owner = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='courses',
+        verbose_name="Владелец",
+        help_text="Кто создал курс"
+    )
 
     class Meta:
         verbose_name = "Курс"
@@ -28,9 +34,9 @@ class Course(models.Model):
         return self.title
 
 
+
 class Lesson(models.Model):
     """Модель урока"""
-
     course = models.ForeignKey(
         Course,
         related_name="lessons",
@@ -57,6 +63,13 @@ class Lesson(models.Model):
         null=True,
         verbose_name="Ссылка на видео",
         help_text="Добавьте ссылку",
+    )
+    owner = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='lessons',
+        verbose_name="Владелец",
+        help_text="Кто создал урок"
     )
 
     class Meta:

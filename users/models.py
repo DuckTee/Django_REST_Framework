@@ -7,8 +7,8 @@ from edumanage.models import Course, Lesson
 class User(AbstractUser):
     """Модель пользователя"""
 
+    # Переопределяем поля
     username = None
-
     email = models.EmailField(
         unique=True, verbose_name="Почта", help_text="Укажите почту"
     )
@@ -37,12 +37,43 @@ class User(AbstractUser):
         help_text="Загрузите аватар",
     )
 
+    # Поле для роли пользователя
+    ROLE_CHOICES = [
+        ('student', 'Студент'),
+        ('moderator', 'Модератор'),
+        ('teacher', 'Преподаватель'),
+        ('admin', 'Администратор'),
+    ]
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default='student',
+        verbose_name="Роль",
+        help_text="Выберите роль пользователя"
+    )
+
+    # Настройки авторизации
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     class Meta:
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+
+    def __str__(self):
+        return self.email
+
+    def is_moderator(self):
+        """Проверяет, является ли пользователь модератором."""
+        return self.role == 'moderator'
+
+    def is_teacher(self):
+        """Проверяет, является ли пользователь преподавателем."""
+        return self.role == 'teacher'
+
+    def is_admin(self):
+        """Проверяет, является ли пользователь администратором."""
+        return self.role == 'admin'
 
 
 class Payment(models.Model):
