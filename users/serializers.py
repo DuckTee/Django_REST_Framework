@@ -3,6 +3,8 @@ from .models import Payment, User
 
 
 class PaymentSerializer(serializers.ModelSerializer):
+    ''' Сериализатор для модели платежей '''
+
     class Meta:
         model = Payment
         fields = [
@@ -17,6 +19,8 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    ''' Сериализатор для модели пользователя '''
+
     payments = PaymentSerializer(many=True, read_only=True)
 
     class Meta:
@@ -27,5 +31,5 @@ class UserSerializer(serializers.ModelSerializer):
             "phone",
             "city",
             "avatar",
-            "payments",  # добавляем поле платежей
+            "payments",
         ]

@@ -3,14 +3,14 @@ from .models import Course, Lesson
 from .serliazers import CourseSerializer, LessonSerializer
 
 
-# ViewSet для курсов
 class CourseViewSet(viewsets.ModelViewSet):
+    ''' ViewSet для курсов '''
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
 
-# Generic-классы для уроков
 class LessonListCreateView(generics.ListCreateAPIView):
+    ''' Generic-классы для уроков '''
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
