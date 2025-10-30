@@ -1,5 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+
+from . import views
 from .views import CourseViewSet, LessonListCreateView, LessonRetrieveUpdateDestroyView
 
 router = DefaultRouter()
@@ -13,4 +15,5 @@ urlpatterns = [
         LessonRetrieveUpdateDestroyView.as_view(),
         name="lesson-detail",
     ),
+    path('subscribe/', views.ManageSubscriptionView.as_view(), name='manage-subscription'),
 ]

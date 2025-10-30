@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("edumanage/", include(("edumanage.urls", "edumanage"))),
     path("users/", include(("users.urls", "users"))),
+    path('api/edumanage/', include('edumanage.urls')),
 ]

@@ -34,6 +34,42 @@ class Course(models.Model):
         return self.title
 
 
+class Subscription(models.Model):
+    """Модель подписки пользователя на курс"""
+
+    user = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+        verbose_name="Пользователь",
+        help_text="Пользователь, подписанный на курс"
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='subscriptions',
+        verbose_name="Курс",
+        help_text="Курс, на который оформлена подписка"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата подписки",
+        help_text="Когда была создана подписка"
+    )
+
+    class Meta:
+        unique_together = ('user', 'course')
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['course']),
+            models.Index(fields=['created_at']),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} → {self.course.title}"
+
 
 class Lesson(models.Model):
     """Модель урока"""

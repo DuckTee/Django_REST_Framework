@@ -1,12 +1,18 @@
-from rest_framework import viewsets, generics, permissions
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from users.permissions import IsOwner, IsModerator
-from .models import Course, Lesson
+from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     """ViewSet для курсов"""
+
     serializer_class = CourseSerializer
+    queryset = Course.objects.all()
 
     def get_permissions(self):
         """
@@ -17,7 +23,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         elif self.action in ['update', 'partial_update']:
             # Редактировать: владелец ИЛИ модератор
-            return [permissions.IsAuthenticated(), IsOwner | IsModerator]
+            return [permissions.IsAuthenticated(), IsOwner() | IsModerator()]
 
         elif self.action == 'create':
             # Создавать: только админы
@@ -25,7 +31,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         elif self.action == 'destroy':
             # Удалять: только владелец
-            return [permissions.IsAuthenticated(), IsOwner]
+            return [permissions.IsAuthenticated(), IsOwner()]
 
         return [permissions.IsAuthenticated()]
 
@@ -82,3 +88,42 @@ class LessonRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.user.is_moderator():
             return Lesson.objects.all()
         return Lesson.objects.filter(owner=self.request.user)
+
+
+class ManageSubscriptionView(APIView):
+    """Generic-класс для подписки"""
+
+    def post(self, request, format=None):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {"error": "Требуется авторизация"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        course_id = request.data.get('course_id')
+        if not course_id:
+            return Response(
+                {"error": "Не указан course_id"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Получаем курс или 404
+        course = get_object_or_404(Course, id=course_id)
+
+        # Ищем существующую подписку
+        subscription = Subscription.objects.filter(
+            user=user,
+            course=course
+        ).first()
+
+        if subscription:
+            # Подписка есть → удаляем
+            subscription.delete()
+            message = "Подписка удалена"
+        else:
+            # Подписки нет → создаём
+            Subscription.objects.create(user=user, course=course)
+            message = "Подписка добавлена"
+
+        return Response({"message": message})
