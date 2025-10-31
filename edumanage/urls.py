@@ -15,5 +15,7 @@ urlpatterns = [
         LessonRetrieveUpdateDestroyView.as_view(),
         name="lesson-detail",
     ),
-    path('subscribe/', views.ManageSubscriptionView.as_view(), name='manage-subscription'),
+    path(
+        "subscribe/", views.ManageSubscriptionView.as_view(), name="manage-subscription"
+    ),
 ]

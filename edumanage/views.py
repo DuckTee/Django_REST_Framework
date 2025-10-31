@@ -20,18 +20,18 @@ class CourseViewSet(viewsets.ModelViewSet):
         """
         Разграничение прав по действиям.
         """
-        if self.action in ['list', 'retrieve']:
+        if self.action in ["list", "retrieve"]:
             return [permissions.IsAuthenticated()]
 
-        elif self.action in ['update', 'partial_update']:
+        elif self.action in ["update", "partial_update"]:
             # Редактировать: владелец ИЛИ модератор
             return [permissions.IsAuthenticated(), IsOwner() | IsModerator()]
 
-        elif self.action == 'create':
+        elif self.action == "create":
             # Создавать: только админы
             return [permissions.IsAdminUser()]
 
-        elif self.action == 'destroy':
+        elif self.action == "destroy":
             # Удалять: только владелец
             return [permissions.IsAuthenticated(), IsOwner()]
 
@@ -55,9 +55,9 @@ class LessonListCreateView(generics.ListCreateAPIView):
     pagination_class = StandardResultsSetPagination
 
     def get_permissions(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return [permissions.IsAuthenticated()]
-        elif self.request.method == 'POST':
+        elif self.request.method == "POST":
             return [permissions.IsAdminUser()]
         return [permissions.IsAuthenticated()]
 
@@ -74,15 +74,16 @@ class LessonListCreateView(generics.ListCreateAPIView):
 
 class LessonRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """Generic-класс для детального просмотра, редактирования и удаления уроков"""
+
     serializer_class = LessonSerializer
-    lookup_field = 'pk'
+    lookup_field = "pk"
 
     def get_permissions(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return [permissions.IsAuthenticated()]
-        elif self.request.method in ['PUT', 'PATCH']:
+        elif self.request.method in ["PUT", "PATCH"]:
             return [permissions.IsAuthenticated(), IsOwner | IsModerator]
-        elif self.request.method == 'DELETE':
+        elif self.request.method == "DELETE":
             return [permissions.IsAuthenticated(), IsOwner]
         return [permissions.IsAuthenticated()]  # fallback
 
@@ -101,25 +102,20 @@ class ManageSubscriptionView(APIView):
         user = request.user
         if not user.is_authenticated:
             return Response(
-                {"error": "Требуется авторизация"},
-                status=status.HTTP_401_UNAUTHORIZED
+                {"error": "Требуется авторизация"}, status=status.HTTP_401_UNAUTHORIZED
             )
 
-        course_id = request.data.get('course_id')
+        course_id = request.data.get("course_id")
         if not course_id:
             return Response(
-                {"error": "Не указан course_id"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "Не указан course_id"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         # Получаем курс или 404
         course = get_object_or_404(Course, id=course_id)
 
         # Ищем существующую подписку
-        subscription = Subscription.objects.filter(
-            user=user,
-            course=course
-        ).first()
+        subscription = Subscription.objects.filter(user=user, course=course).first()
 
         if subscription:
             # Подписка есть → удаляем

@@ -5,16 +5,16 @@ from .validators import LinkValidator
 
 class LessonSerializer(serializers.ModelSerializer):
     """Сериализатор урока"""
+
     video_url = serializers.URLField(
         required=False,
         allow_blank=True,
-        validators=[LinkValidator()]  # ← валидатор для video_url
+        validators=[LinkValidator()],  # ← валидатор для video_url
     )
 
     class Meta:
         model = Lesson
-        fields = '__all__'
-
+        fields = "__all__"
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -32,22 +32,19 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         """Проверяет, подписан ли текущий пользователь на курс"""
 
-        request = self.context.get('request')
+        request = self.context.get("request")
         if request and request.user.is_authenticated:
-            return Subscription.objects.filter(
-                user=request.user,
-                course=obj
-            ).exists()
+            return Subscription.objects.filter(user=request.user, course=obj).exists()
         return False
 
     class Meta:
         model = Course
         fields = [
-            'id',
-            'title',
-            'description',
-            'preview',
-            'lessons',
-            'lessons_count',
-            'is_subscribed',
+            "id",
+            "title",
+            "description",
+            "preview",
+            "lessons",
+            "lessons_count",
+            "is_subscribed",
         ]

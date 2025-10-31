@@ -5,7 +5,7 @@ from .models import Payment, User
 
 
 class PaymentSerializer(serializers.ModelSerializer):
-    ''' Сериализатор для модели платежей '''
+    """Сериализатор для модели платежей"""
 
     class Meta:
         model = Payment
@@ -21,7 +21,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    ''' Сериализатор для модели пользователя '''
+    """Сериализатор для модели пользователя"""
 
     payments = PaymentSerializer(many=True, read_only=True)
 
@@ -39,17 +39,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации пользователя"""
+
     password = serializers.CharField(
         write_only=True,
         min_length=8,
         style={"input_type": "password"},
-        help_text="Пароль должен быть не менее 8 символов"
+        help_text="Пароль должен быть не менее 8 символов",
     )
     confirm_password = serializers.CharField(
         write_only=True,
         min_length=8,
         style={"input_type": "password"},
-        help_text="Повторите пароль"
+        help_text="Повторите пароль",
     )
 
     class Meta:

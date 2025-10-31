@@ -8,7 +8,7 @@ from edumanage.models import Course, Lesson
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
-            raise ValueError('Email обязателен')
+            raise ValueError("Email обязателен")
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -16,8 +16,8 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
         return self.create_user(email, password, **extra_fields)
 
 
@@ -56,17 +56,17 @@ class User(AbstractUser):
 
     # Поле для роли пользователя
     ROLE_CHOICES = [
-        ('student', 'Студент'),
-        ('moderator', 'Модератор'),
-        ('teacher', 'Преподаватель'),
-        ('admin', 'Администратор'),
+        ("student", "Студент"),
+        ("moderator", "Модератор"),
+        ("teacher", "Преподаватель"),
+        ("admin", "Администратор"),
     ]
     role = models.CharField(
         max_length=20,
         choices=ROLE_CHOICES,
-        default='student',
+        default="student",
         verbose_name="Роль",
-        help_text="Выберите роль пользователя"
+        help_text="Выберите роль пользователя",
     )
 
     # Настройки авторизации
@@ -84,15 +84,15 @@ class User(AbstractUser):
 
     def is_moderator(self):
         """Проверяет, является ли пользователь модератором."""
-        return self.role == 'moderator'
+        return self.role == "moderator"
 
     def is_teacher(self):
         """Проверяет, является ли пользователь преподавателем."""
-        return self.role == 'teacher'
+        return self.role == "teacher"
 
     def is_admin(self):
         """Проверяет, является ли пользователь администратором."""
-        return self.role == 'admin'
+        return self.role == "admin"
 
 
 class Payment(models.Model):

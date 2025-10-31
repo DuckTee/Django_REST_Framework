@@ -10,11 +10,9 @@ router.register(r"users", views.UserAdminViewSet, basename="user")  # CRUD дл�
 urlpatterns = [
     # 1. Основные API-эндпоинты (через роутер)
     path("", include(router.urls)),
-
     # 2. Регистрация и профиль пользователя
     path("register/", views.RegisterView.as_view(), name="register"),
     path("profile/", views.UserProfileView.as_view(), name="user-profile"),
-
     # 3. JWT-эндпоинты (встроенные из simplejwt)
     path(
         "api/token/",
@@ -25,5 +23,5 @@ urlpatterns = [
         "api/token/refresh/",
         jwt_views.TokenRefreshView.as_view(),
         name="token_refresh",
-    )
+    ),
 ]

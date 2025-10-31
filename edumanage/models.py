@@ -3,6 +3,7 @@ from django.db import models
 
 class Course(models.Model):
     """Модель курса"""
+
     title = models.CharField(
         max_length=255,
         verbose_name="Название курса",
@@ -19,11 +20,11 @@ class Course(models.Model):
         blank=True, null=True, verbose_name="Описание", help_text="Добавьте описание"
     )
     owner = models.ForeignKey(
-        'users.User',
+        "users.User",
         on_delete=models.CASCADE,
-        related_name='courses',
+        related_name="courses",
         verbose_name="Владелец",
-        help_text="Кто создал курс"
+        help_text="Кто создал курс",
     )
 
     class Meta:
@@ -38,33 +39,33 @@ class Subscription(models.Model):
     """Модель подписки пользователя на курс"""
 
     user = models.ForeignKey(
-        'users.User',
+        "users.User",
         on_delete=models.CASCADE,
-        related_name='subscriptions',
+        related_name="subscriptions",
         verbose_name="Пользователь",
-        help_text="Пользователь, подписанный на курс"
+        help_text="Пользователь, подписанный на курс",
     )
     course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name='subscriptions',
+        related_name="subscriptions",
         verbose_name="Курс",
-        help_text="Курс, на который оформлена подписка"
+        help_text="Курс, на который оформлена подписка",
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name="Дата подписки",
-        help_text="Когда была создана подписка"
+        help_text="Когда была создана подписка",
     )
 
     class Meta:
-        unique_together = ('user', 'course')
+        unique_together = ("user", "course")
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
         indexes = [
-            models.Index(fields=['user']),
-            models.Index(fields=['course']),
-            models.Index(fields=['created_at']),
+            models.Index(fields=["user"]),
+            models.Index(fields=["course"]),
+            models.Index(fields=["created_at"]),
         ]
 
     def __str__(self):
@@ -73,6 +74,7 @@ class Subscription(models.Model):
 
 class Lesson(models.Model):
     """Модель урока"""
+
     course = models.ForeignKey(
         Course,
         related_name="lessons",
@@ -101,11 +103,11 @@ class Lesson(models.Model):
         help_text="Добавьте ссылку",
     )
     owner = models.ForeignKey(
-        'users.User',
+        "users.User",
         on_delete=models.CASCADE,
-        related_name='lessons',
+        related_name="lessons",
         verbose_name="Владелец",
-        help_text="Кто создал урок"
+        help_text="Кто создал урок",
     )
 
     class Meta:
