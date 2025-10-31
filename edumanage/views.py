@@ -7,6 +7,7 @@ from .serializers import CourseSerializer, LessonSerializer
 class CourseViewSet(viewsets.ModelViewSet):
     """ViewSet для курсов"""
     serializer_class = CourseSerializer
+    queryset = Course.objects.all()
 
     def get_permissions(self):
         """
