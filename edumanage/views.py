@@ -9,6 +9,7 @@ from users.permissions import IsOwner, IsModerator
 from .models import Course, Lesson, Subscription
 from .paginators import StandardResultsSetPagination
 from .serializers import CourseSerializer, LessonSerializer
+from tasks import send_course_update_email
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -19,35 +20,46 @@ class CourseViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_permissions(self):
-        """
-        Разграничение прав по действиям.
-        """
         if self.action in ["list", "retrieve"]:
             return [permissions.IsAuthenticated()]
-
         elif self.action in ["update", "partial_update"]:
-            # Редактировать: владелец ИЛИ модератор
             return [permissions.IsAuthenticated(), IsOwner() | IsModerator()]
-
         elif self.action == "create":
-            # Создавать: только админы
             return [permissions.IsAdminUser()]
-
         elif self.action == "destroy":
-            # Удалять: только владелец
             return [permissions.IsAuthenticated(), IsOwner()]
-
         return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
-        """
-        Модераторы видят все курсы, остальные — только свои.
-        """
         if not self.request.user.is_authenticated:
             return Course.objects.none()
         if self.request.user.is_moderator():
             return Course.objects.all()
         return Course.objects.filter(owner=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Переопределяем update для отправки рассылки после сохранения
+        """
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        # Сохраняем изменения
+        self.perform_update(serializer)
+
+        # Запускаем асинхронную рассылку подписчикам
+        send_course_update_email.delay(instance.id)
+
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Аналогично update, но для частичного обновления
+        """
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
 
 
 class LessonListCreateView(generics.ListCreateAPIView):
