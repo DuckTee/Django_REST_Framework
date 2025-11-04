@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -98,6 +100,34 @@ class LessonRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 class ManageSubscriptionView(APIView):
     """Generic-класс для подписки"""
 
+    @swagger_auto_schema(
+        operation_summary="Управление подпиской на курс",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['course_id'],
+            properties={
+                'course_id': openapi.Schema(type=openapi.TYPE_INTEGER)
+            }
+        ),
+        responses={
+            200: openapi.Response('OK', openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={'message': openapi.Schema(type=openapi.TYPE_STRING)}
+            )),
+            400: openapi.Response('Bad Request', openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={'error': openapi.Schema(type=openapi.TYPE_STRING)}
+            )),
+            401: openapi.Response('Unauthorized', openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={'error': openapi.Schema(type=openapi.TYPE_STRING)}
+            )),
+            404: openapi.Response('Not Found', openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={'detail': openapi.Schema(type=openapi.TYPE_STRING)}
+            ))
+        }
+    )
     def post(self, request, format=None):
         user = request.user
         if not user.is_authenticated:

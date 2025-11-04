@@ -1,5 +1,8 @@
 from django.shortcuts import redirect
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, filters, permissions
+from rest_framework.decorators import api_view
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
@@ -85,6 +88,19 @@ class PaymentViewSet(viewsets.ModelViewSet):
     ordering = ["-payment_date"]  # сортировка по умолчанию
 
 
+@swagger_auto_schema(
+    method='get',
+    operation_summary="Оплата курса через Stripe",
+    manual_parameters=[
+        openapi.Parameter('course_id', openapi.IN_PATH, type=openapi.TYPE_INTEGER, description="ID курса")
+    ],
+    responses={
+        302: "Редирект на Stripe Checkout",
+        404: "Курс не найден",
+        500: "Ошибка платёжной системы"
+    }
+)
+@api_view(['GET'])
 def start_payment(request, course_id):
     """
     Запускает процесс оплаты для курса.
