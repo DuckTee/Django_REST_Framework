@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .models import Subscription, Course
 
+
 @shared_task
 def send_course_update_email(course_id):
     """
